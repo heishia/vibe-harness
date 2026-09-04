@@ -1,0 +1,4 @@
+node_modules/
+.DS_Store
+Thumbs.db
+.git/COMMIT_MSG_TEMP
