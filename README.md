@@ -12,7 +12,19 @@ Cursor는 레포 **루트**의 `.cursor`만 읽는다. 설치 스크립트는 pn
 git submodule add https://github.com/heishia/vibe-harness.git vibe-harness && node ./vibe-harness/scripts/install.mjs
 ```
 
-또는 `pnpm add -D github:heishia/vibe-harness` (postinstall이 프로젝트 루트 `.cursor`를 연결한다).
+또는:
+
+```powershell
+pnpm add -D github:heishia/vibe-harness#main
+```
+
+postinstall이 프로젝트 루트 `.cursor`를 연결한다.
+
+같은 명령을 다시 쳐도 pnpm은 **처음 받은 커밋을 lock에 고정**한다. 하네스를 최신으로 받으려면 `#main`을 붙이거나:
+
+```powershell
+pnpm update vibe-harness
+```
 
 ### 웹 뼈대
 

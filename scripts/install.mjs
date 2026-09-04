@@ -16,6 +16,17 @@ const harnessRoot = path.resolve(
   "..",
 );
 
+function harnessVersion() {
+  try {
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(harnessRoot, "package.json"), "utf8"),
+    );
+    return pkg.version ?? "?";
+  } catch {
+    return "?";
+  }
+}
+
 function pathHasNodeModules(dir) {
   return dir.split(path.sep).includes("node_modules");
 }
@@ -113,6 +124,7 @@ if (path.resolve(projectRoot) === path.resolve(harnessRoot)) {
 
 if (fs.existsSync(cursorDest)) {
   if (isLinkTo(cursorDest, cursorSrc)) {
+    console.log(`vibe-harness ${harnessVersion()}`);
     console.log(`.cursor 이미 프로젝트 루트에 연결됨`);
     console.log(`프로젝트: ${projectRoot}`);
     console.log(`대상: ${cursorSrc}`);
@@ -135,5 +147,6 @@ if (fs.existsSync(cursorDest)) {
 
 createLink(cursorDest, cursorSrc);
 
+console.log(`vibe-harness ${harnessVersion()}`);
 console.log(`연결: ${cursorDest} → ${cursorSrc}`);
 console.log(`프로젝트: ${projectRoot}`);
