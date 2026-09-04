@@ -2,7 +2,9 @@
 
 바이브코딩용 범용 하네스. 폴더를 손으로 복붙하지 말고 **git으로 붙인 뒤 설치 스크립트**로 Cursor에 연결한다.
 
-Cursor는 레포 루트의 `.cursor`만 읽는다. 설치 스크립트가 그걸 이 패키지의 `.cursor`에 연결한다.
+Cursor는 레포 **루트**의 `.cursor`만 읽는다. 설치 스크립트는 pnpm `.pnpm` 경로가 아니라 프로젝트 루트에 연결한다. 패키지로 붙이면 대상은 `node_modules/vibe-harness/.cursor`다.
+
+이미 루트 `.cursor`가 하네스 연결이면 새 경로로 다시 연결한다. 직접 만든 `.cursor` 폴더는 건드리지 않는다.
 
 ## 새 프로젝트에 설치
 
@@ -10,10 +12,7 @@ Cursor는 레포 루트의 `.cursor`만 읽는다. 설치 스크립트가 그걸
 git submodule add https://github.com/heishia/vibe-harness.git vibe-harness && node ./vibe-harness/scripts/install.mjs
 ```
 
-또는 `pnpm add -D github:heishia/vibe-harness` (postinstall이 `.cursor`를 연결한다).
-
-이미 루트에 `.cursor`가 있으면 스크립트가 덮어쓰지 않는다.
-
+또는 `pnpm add -D github:heishia/vibe-harness` (postinstall이 프로젝트 루트 `.cursor`를 연결한다).
 
 ### 웹 뼈대
 

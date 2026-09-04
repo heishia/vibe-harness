@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * 프로젝트 루트의 .cursor 를 이 패키지의 .cursor 로 연결한다.
- * - git submodule: <project>/vibe-harness
- * - npm/pnpm git 의존성: <project>/node_modules/vibe-harness
+ * 항상 프로젝트 루트의 .cursor 를 연결한다.
+ * pnpm은 실제 파일이 .pnpm 아래에 있으므로, 연결 대상은
+ * node_modules/vibe-harness/.cursor (패키지 이름 경로)를 우선한다.
  */
 
 import { execFileSync } from "node:child_process";
@@ -11,70 +11,129 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const harnessRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const cursorSrc = path.join(harnessRoot, ".cursor");
+const harnessRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+);
+
+function pathHasNodeModules(dir) {
+  return dir.split(path.sep).includes("node_modules");
+}
 
 function resolveProjectRoot() {
-  const parent = path.dirname(harnessRoot);
-  if (path.basename(parent) === "node_modules") {
-    return path.dirname(parent);
+  let dir = path.dirname(harnessRoot);
+  while (true) {
+    if (!pathHasNodeModules(dir)) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      return dir;
+    }
+    dir = parent;
   }
-  return parent;
+}
+
+function firstExisting(paths) {
+  return paths.find((p) => fs.existsSync(p));
+}
+
+function resolveCursorSrc(projectRoot) {
+  return firstExisting([
+    path.join(projectRoot, "node_modules", "vibe-harness", ".cursor"),
+    path.join(projectRoot, "vibe-harness", ".cursor"),
+    path.join(harnessRoot, ".cursor"),
+  ]);
+}
+
+function real(p) {
+  try {
+    return fs.realpathSync(p);
+  } catch {
+    return null;
+  }
+}
+
+function isHarnessCursorDir(dir) {
+  const resolved = real(dir);
+  if (!resolved) return false;
+  const normalized = resolved.replaceAll("\\", "/").toLowerCase();
+  return normalized.includes("/vibe-harness/") && normalized.endsWith("/.cursor");
 }
 
 function isLinkTo(dest, src) {
-  try {
-    const stat = fs.lstatSync(dest);
-    if (stat.isSymbolicLink()) {
-      return path.resolve(path.dirname(dest), fs.readlinkSync(dest)) === path.resolve(src);
-    }
-  } catch {
-    return false;
+  const a = real(dest);
+  const b = real(src);
+  return Boolean(a && b && a === b);
+}
+
+function removeJunctionOrSymlink(dest) {
+  if (os.platform() === "win32") {
+    execFileSync("cmd.exe", ["/c", "rmdir", dest], { stdio: "inherit" });
+    return;
   }
-  return false;
+  fs.unlinkSync(dest);
 }
 
-function linkWindowsJunction(dest, src) {
-  execFileSync("cmd.exe", ["/c", "mklink", "/J", dest, src], {
-    stdio: "inherit",
-  });
+function createLink(dest, src) {
+  if (os.platform() === "win32") {
+    execFileSync("cmd.exe", ["/c", "mklink", "/J", dest, src], {
+      stdio: "inherit",
+    });
+    return;
+  }
+  fs.symlinkSync(src, dest, "dir");
 }
 
-const projectRoot = resolveProjectRoot();
-const cursorDest = path.join(projectRoot, ".cursor");
-const inNodeModules = path.basename(path.dirname(harnessRoot)) === "node_modules";
+const inNodeModules = pathHasNodeModules(harnessRoot);
 
-if (!inNodeModules && path.resolve(process.cwd()) === path.resolve(harnessRoot)) {
+if (
+  !inNodeModules &&
+  path.resolve(process.cwd()) === path.resolve(harnessRoot)
+) {
   console.log("vibe-harness 레포 안에서는 .cursor를 연결하지 않습니다.");
   process.exit(0);
 }
 
-if (!fs.existsSync(cursorSrc)) {
-  console.error(`하네스 .cursor 가 없습니다: ${cursorSrc}`);
+const projectRoot = resolveProjectRoot();
+const cursorSrc = resolveCursorSrc(projectRoot);
+const cursorDest = path.join(projectRoot, ".cursor");
+
+if (!cursorSrc) {
+  console.error("하네스 .cursor 를 찾지 못했습니다.");
   process.exit(1);
 }
 
 if (path.resolve(projectRoot) === path.resolve(harnessRoot)) {
-  console.error("프로젝트 루트를 찾지 못했습니다. submodule 또는 node_modules 아래에 두고 다시 실행하세요.");
+  console.error(
+    "프로젝트 루트를 찾지 못했습니다. submodule 또는 패키지로 붙인 뒤 실행하세요.",
+  );
   process.exit(1);
 }
 
 if (fs.existsSync(cursorDest)) {
   if (isLinkTo(cursorDest, cursorSrc)) {
-    console.log(`.cursor 이미 연결됨 → ${cursorSrc}`);
+    console.log(`.cursor 이미 프로젝트 루트에 연결됨`);
+    console.log(`프로젝트: ${projectRoot}`);
+    console.log(`대상: ${cursorSrc}`);
     process.exit(0);
   }
-  console.error(
-    `이미 ${cursorDest} 가 있습니다. 지운 뒤 다시 실행하거나, 기존 룰과 수동으로 합치세요.`,
-  );
-  process.exit(1);
+
+  const stat = fs.lstatSync(cursorDest);
+  const canReplace =
+    isHarnessCursorDir(cursorDest) || stat.isSymbolicLink();
+
+  if (!canReplace) {
+    console.error(
+      `이미 ${cursorDest} 가 있습니다. 하네스 연결이 아니면 지우지 않습니다.`,
+    );
+    process.exit(1);
+  }
+
+  removeJunctionOrSymlink(cursorDest);
 }
 
-if (os.platform() === "win32") {
-  linkWindowsJunction(cursorDest, cursorSrc);
-} else {
-  fs.symlinkSync(cursorSrc, cursorDest, "dir");
-}
+createLink(cursorDest, cursorSrc);
 
 console.log(`연결: ${cursorDest} → ${cursorSrc}`);
 console.log(`프로젝트: ${projectRoot}`);
