@@ -42,6 +42,12 @@ function linkWindowsJunction(dest, src) {
 
 const projectRoot = resolveProjectRoot();
 const cursorDest = path.join(projectRoot, ".cursor");
+const inNodeModules = path.basename(path.dirname(harnessRoot)) === "node_modules";
+
+if (!inNodeModules && path.resolve(process.cwd()) === path.resolve(harnessRoot)) {
+  console.log("vibe-harness 레포 안에서는 .cursor를 연결하지 않습니다.");
+  process.exit(0);
+}
 
 if (!fs.existsSync(cursorSrc)) {
   console.error(`하네스 .cursor 가 없습니다: ${cursorSrc}`);

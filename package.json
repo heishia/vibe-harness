@@ -8,7 +8,8 @@
     "vibe-harness-install": "./scripts/install.mjs"
   },
   "scripts": {
-    "install-cursor": "node ./scripts/install.mjs"
+    "install-cursor": "node ./scripts/install.mjs",
+    "postinstall": "node ./scripts/install.mjs"
   },
   "files": [
     ".cursor",
