@@ -31,18 +31,45 @@ function pathHasNodeModules(dir) {
   return dir.split(path.sep).includes("node_modules");
 }
 
-function resolveProjectRoot() {
-  let dir = path.dirname(harnessRoot);
+function hasHarnessCursor(dir) {
+  return Boolean(
+    firstExisting([
+      path.join(dir, "node_modules", "vibe-harness", ".cursor"),
+      path.join(dir, "vibe-harness", ".cursor"),
+    ]),
+  );
+}
+
+function looksLikeProjectRoot(dir) {
+  if (pathHasNodeModules(dir)) return false;
+  return (
+    fs.existsSync(path.join(dir, "package.json")) && hasHarnessCursor(dir)
+  );
+}
+
+function walkUp(start, predicate) {
+  let dir = start;
   while (true) {
-    if (!pathHasNodeModules(dir)) {
-      return dir;
-    }
+    if (predicate(dir)) return dir;
     const parent = path.dirname(dir);
-    if (parent === dir) {
-      return dir;
-    }
+    if (parent === dir) return null;
     dir = parent;
   }
+}
+
+function resolveProjectRoot() {
+  const fromCwd = walkUp(path.resolve(process.cwd()), looksLikeProjectRoot);
+  if (fromCwd) return fromCwd;
+
+  const fromPackage = walkUp(path.dirname(harnessRoot), (dir) => {
+    return !pathHasNodeModules(dir) && hasHarnessCursor(dir);
+  });
+  if (fromPackage) return fromPackage;
+
+  return (
+    walkUp(path.dirname(harnessRoot), (dir) => !pathHasNodeModules(dir)) ??
+    path.resolve(process.cwd())
+  );
 }
 
 function firstExisting(paths) {

@@ -8,23 +8,21 @@ Cursor는 레포 **루트**의 `.cursor`만 읽는다. 설치 스크립트는 pn
 
 ## 새 프로젝트에 설치
 
-```powershell
-git submodule add https://github.com/heishia/vibe-harness.git vibe-harness && node ./vibe-harness/scripts/install.mjs
-```
-
-또는:
+pnpm 10은 의존성 `postinstall`을 기본으로 실행하지 않는다. 패키지만 받고 멈추면 루트 `.cursor`가 생기지 않으니, **연결 명령을 꼭 한 번 더** 실행한다.
 
 ```powershell
 pnpm add -D github:heishia/vibe-harness#main
+pnpm exec vibe-harness-install
 ```
 
-postinstall이 프로젝트 루트 `.cursor`를 연결한다.
-
-같은 명령을 다시 쳐도 pnpm은 **처음 받은 커밋을 lock에 고정**한다. 하네스를 최신으로 받으려면 `#main`을 붙이거나:
+또는 submodule:
 
 ```powershell
-pnpm update vibe-harness
+git submodule add https://github.com/heishia/vibe-harness.git vibe-harness
+node ./vibe-harness/scripts/install.mjs
 ```
+
+성공하면 프로젝트 루트에 `.cursor` junction이 생기고, 대상은 `node_modules/vibe-harness/.cursor`다. 같은 `pnpm add`만 다시 치면 lock에 묶인 예전 커밋이 유지되므로, 업데이트 때도 위 두 줄을 그대로 쓴다.
 
 ### 웹 뼈대
 
