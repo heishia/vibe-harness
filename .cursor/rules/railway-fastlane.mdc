@@ -7,7 +7,9 @@ alwaysApply: true
 
 새 프로젝트는 이 조합을 먼저 깐다. 명령 스니펫은 `templates/snippets/` 와 `.cursor/skills/` 를 따른다.
 
-1. 웹 서비스는 Railway. API, 사용자 웹앱, 랜딩, 관리자, 크론, 버킷을 서비스로 나누고 한 레포에서 배포한다.
+기본 산출물은 **사용자 웹 + 그걸 감싼 iOS·Android 앱**이다.
+
+1. 웹 서비스는 Railway. 기본은 API와 사용자 웹(앱 원천). 버킷·크론은 필요할 때 나눈다. 랜딩·관리자 서비스는 그 앱을 만들 때만 추가한다.
 2. 운영 작업 전 `railway status`. 운영 DB·마이그레이션은 `railway run --service <svc> --environment production`.
 3. 배포는 git 푸시 후 Railway 빌드. 로컬에서 컨테이너를 직접 올리는 경로를 기본으로 두지 않는다.
 4. API 기동 때 마이그레이션. 기동이 길거나 락이 걸리면 잡을 분리해도 된다.
@@ -16,4 +18,5 @@ alwaysApply: true
 7. versionCode를 올리고 AAB 빌드 후 Fastlane 업로드 성공까지가 완료.
 8. Fastlane은 PATH에 없을 수 있다. 설치 경로를 명시해 호출. (예: Windows `C:\Ruby32-x64\bin\fastlane.bat`)
 9. iOS는 로컬 Xcode가 없어도 중단하지 않는다. CI(macOS)로 아카이브·TestFlight.
-10. Play JSON 키·인증서는 레포에 커밋하지 않는다. 명령에는 `<PACKAGE_ID>`, `<PATH_TO_PLAY_JSON>` 만 쓴다.
+10. 화면을 바꿨으면 iOS·Android 번들을 같이 갱신한다. 한 스토어만 올리고 끝내지 않는다. (사용자가 한 쪽만 올리면 그때만 예외)
+11. Play JSON 키·인증서는 레포에 커밋하지 않는다. 명령에는 `<PACKAGE_ID>`, `<PATH_TO_PLAY_JSON>` 만 쓴다.

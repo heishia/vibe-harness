@@ -12,7 +12,7 @@ description: >-
 ## 절차
 
 1. `android/app/build.gradle`의 `versionCode`를 이전 업로드보다 올린다. 필요하면 `versionName`도.
-2. 웹 UI를 바꿨으면 프로덕션 웹 빌드 후 Capacitor sync. 웹만 바꾸고 끝내지 않는다.
+2. 웹 UI를 바꿨으면 프로덕션 웹 빌드 후 Capacitor sync. iOS도 같이 갱신한다. 웹만 바꾸고 끝내지 않는다. 사용자가 Android만 올리라고 하면 iOS 업로드는 건너뛴다.
 3. AAB를 빌드한다.
 4. Fastlane `supply`를 **production** 트랙으로 실행한다. `--track internal`을 쓰지 않는다.
 5. 업로드 성공 로그를 확인한 뒤에야 완료다. AAB만 만들고 끝내지 않는다.
