@@ -1,0 +1,61 @@
+---
+description: 앱 화면 레시피. 헤더, 탭, 카드, 시트, 스티키바, 빈 화면. 브랜드색 없이 구조만.
+alwaysApply: true
+---
+
+# 앱 UI 패턴
+
+토큰은 `app-ui.mdc`. 아래는 화면을 짤 때 그대로 쓰는 구조다. 브랜드 포인트색이 필요한 자리에는 회색/검정으로 두고, 나중에 액센트만 갈아끼운다.
+
+## 셸과 탐색
+
+1. **하단 탭**은 홈·핵심 3~5개만. `fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md`. 흰 바, `border-t border-gray-200`, `pb-[var(--app-safe-area-bottom)]`. 아이콘+10px 라벨. 활성 아이콘/라벨은 검정, 비활성은 gray-400. 가운데 떠 있는 원 버튼이 있으면 기본 면은 gray-900, 지름 56px, `-mt-5`, `shadow-lg`.
+2. **홈 헤더**: 흰 스티키, `px-4 py-3`, 약한 `shadow-sm`. 왼쪽 로고 `h-7`, 오른쪽은 검색/메뉴 `p-2 rounded-full hover:bg-gray-100`, 아이콘 `w-5 text-gray-600`.
+3. **서브 헤더**: 같은 스티키. 왼쪽 뒤로가기(36px 원, `ArrowLeft w-5`, `hover:bg-gray-100`, `active:scale-95`). 제목은 `flex-1 text-center font-bold -ml-9`로 광학 중앙. 오른쪽이 비면 그대로 둔다. `border-b border-gray-100` 또는 `shadow-sm` 중 하나.
+4. **전체 메뉴**는 왼쪽 서랍이 아니라 **위에서 덮는 풀스크린**. `max-w-md`, 안전영역 패딩. 헤더에 로고+장바구니+닫기(X). 로그인 줄(이름 bold + 이메일 xs). 퀵메뉴 4열(48px `rounded-2xl` 아이콘 웰은 gray-100, 라벨 11px). 아래는 섹션 제목 `text-sm font-black` + 행(`px-5 py-3.5`, 왼쪽 아이콘 gray-400, 오른쪽 `ChevronRight` gray-300). 열리면 `body overflow: hidden`.
+5. 탭이 있는 라우트에만 하단 탭을 단다. 그 외는 서브 헤더+뒤로가기.
+
+## 홈·목록
+
+6. **히어로 배너**: `px-4 pt-4`, `rounded-2xl overflow-hidden shadow-lg`, 가로 고정 비율(이미지가 비율을 정함). 이미지는 `object-cover`. 여러 장이면 가로 스와이프+좌우 쉐브론(반투명 흰). CSS 그라데이션으로 배너를 대체하지 않는다. 파일 없으면 회색 플레이스홀더.
+7. **검색**: 헤더 돋보기로 같은 페이지에 칸을 펼친다. 왼쪽 돋보기, `py-3 rounded-xl bg-white border-gray-200 shadow-sm`.
+8. **카테고리 칩**: 흰 `rounded-2xl shadow-sm p-1.5` 안에 가로 스크롤(`scroll-hide`). 칩 `px-4 py-2.5 rounded-xl text-sm font-bold`. 활성 `bg-gray-900 text-white`, 비활성 `text-gray-500`. 칩 줄을 좌우로 밀어 카테고리를 바꿔도 된다.
+9. **섹션 헤더**: 왼쪽 `text-lg font-black`, 오른쪽 개수 xs.
+10. **카탈로그 그리드**: `grid-cols-3 gap-4`. 위 이미지/플래그(높이 48, `rounded-md border-gray-200 shadow-sm`), 아래 `text-xs font-semibold` 가운데. 누르면 `scale-95`. 더 있으면 `전체보기` 보조 버튼(흰 면, 회색 테두리, `py-3 rounded-xl`).
+11. **안내 카드**: 흰 `rounded-2xl p-5 shadow-sm`. 제목 bold, 본문 `text-xs text-gray-500 space-y-2.5`. 불릿은 6px 회색 점(`mt-1.5`). 강조만 `font-semibold text-gray-700`.
+12. **혜택/이벤트 배너**: 히어로보다 낮게, 같은 `rounded-2xl`+비율. 탭하면 이벤트 목록.
+
+## 카드·행·폼
+
+13. **설정 카드**: 흰 `rounded-2xl shadow-sm overflow-hidden`. 상단 `px-5 pt-5 pb-3`에 제목 sm bold + 설명 xs gray-400. 본문은 `divide-y divide-gray-100`. 행은 `flex justify-between px-5 py-3.5`, 왼쪽 라벨 gray-500, 오른쪽 값 `font-semibold truncate`.
+14. **이동 행**: 흰 카드 또는 보더 행. 왼쪽 48px `rounded-2xl` 아이콘 웰(기본 `bg-gray-100 text-gray-700`), 제목 15px bold, 부제 xs gray-500 `line-clamp-2`, 오른쪽 셰브론 gray-300. `active:scale-[0.98]`.
+15. **FAQ**: `<details>`. 접힌 줄 `px-4 py-3.5`, 작은 아이콘 웰 32px `rounded-lg bg-gray-100`. 열리면 셰브론 90도, 본문 `text-sm text-gray-600 leading-relaxed`.
+16. **키-값 운영정보**: 카드 안 `flex justify-between py-2 border-b border-gray-100`. 왼쪽 gray-600, 오른쪽 font-medium. 각주 `text-[11px] text-gray-400`.
+17. **입력**: `w-full py-4 bg-gray-50 border-gray-200 rounded-xl text-sm`. 왼쪽 아이콘 `left-4 w-4 text-gray-400`, 패딩 `pl-12`. 비밀번호 눈 아이콘은 오른쪽. 포커스는 테두리만 진하게, 파란 면 없음. 라벨이 있으면 위 `text-sm text-gray-500 mb-2`.
+18. **에러**: 필드 아래 `text-sm bg-red-50 text-red-500 px-4 py-2.5 rounded-xl`.
+19. **1차 버튼**: `w-full py-4 bg-gray-900 text-white rounded-xl font-bold text-sm active:scale-[0.98] disabled:opacity-50`. 로딩 중 문구를 버튼 안에 쓴다.
+20. **2차 버튼**: 흰 면+`border-gray-200`+`text-gray-600/900`. 작은  pill은 `rounded-full border px-3 py-1.5 text-xs font-semibold`.
+21. **쌍 버튼**: `grid-cols-2 gap-2` 취소|저장, 또는 구매바에서 `grid-cols-[0.9fr_1.1fr]` 장바구니|구매. 구매가 더 넓고 검정 면.
+22. **구분선+또는**: `h-px bg-gray-200` 사이 `text-xs text-gray-400`.
+23. **소셜 로그인**: 각 플랫폼 공식색, `py-3.5 rounded-xl font-semibold text-sm` + 아이콘. 그 외 CTA는 검정.
+24. **보조 링크**: 가운데 `text-sm text-gray-500`, 액션만 semibold. 세로 `space-y-3`.
+
+## 오버레이
+
+25. **바텀 시트**: `items-end`, 백드롭 `bg-black/40`(약하면 `/30`). 패널 `max-w-md rounded-t-2xl max-h-[80vh] flex flex-col`. 타이틀 lg bold + 원형 X. 스크롤은 중간만. 하단 확인은 검정 `py-3.5`. 열리면 스크롤 잠금.
+26. **큰 설치유도 시트**: 위 모서리 28px, `px-5 pt-8 pb-7` 가운데 정렬. 작은 대문자 라벨, 제목 font-black, 검정 CTA. 뒤 콘텐츠는 `blur-[1px] pointer-events-none`로 깔아 두고 시트만 누르게.
+27. **가운데 다이얼로그**(로그인 필요 등): `items-center px-6`, 패널 `max-w-sm rounded-2xl px-6 pt-6 pb-6`. 우상단 원형 닫기 `bg-gray-100`. 위 64px 회색 원 안에 라인 아이콘. 제목 lg bold, 본문 sm gray-500, 검정 버튼.
+28. **토스트**: `fixed inset-0 z-[2000] flex items-center justify-center` 포인터 통과. 카드 `max-w-[280px] rounded-3xl bg-white/95 border-white/70 shadow-2xl px-5 py-5` 가운데. 위 44px 검정 원(i 또는 체크). `font-semibold leading-6` 짧은 문장. 2.5초.
+29. **나중에**: 1차 버튼 아래 `py-3 text-sm text-gray-400` 텍스트 버튼. 시트에 닫기 X와 역할을 나눈다.
+
+## 구매·푸터·상태
+
+30. **스티키 구매바**: `sticky/fixed bottom-0 z-50 bg-white border-t border-gray-200 p-4` + 안전영역. 위 줄: 왼쪽 요약 `text-sm text-gray-500 truncate`, 오른쪽 금액 `text-xl font-black`. 아래 1차 버튼 또는 장바구니+구매.
+31. **푸터**: 페이지 맨 아래 `bg-gray-100 px-4 py-8 mt-8`. 안쪽 흰 `rounded-2xl p-6`. 로고 `h-6`, 고객센터/사업자 `text-xs text-gray-500`, 저작권 `text-[10px] text-gray-400` 가운데.
+32. **로딩**: 가운데 `py-12` 또는 `py-24`. 짧은 `text-gray-500 font-medium`. 스피너가 있으면 40px 링, 색은 gray-900. “불러오는 중...” 해요체.
+33. **빈 화면**: `py-12` 가운데. 큰 라인 아이콘 gray-300, 제목 gray-500 font-medium, 한 줄 힌트 `text-sm text-gray-400`.
+34. **에러 화면**: 흰 면 가운데. 제목 xl bold, 본문 sm gray-500, 검정 `새로고침`.
+35. **수량**: 원형 또는 작은 보더 버튼 `Plus`/`Minus` `w-4`. 숫자는 가운데 고정폭.
+36. **날짜**: `YYYY.MM.DD`. 전화는 `000-0000-0000`.
+37. **가로 캐러셀·칩 줄**은 스크롤바 숨김(`.scroll-hide`).
+38. **앱 전용 기능**은 웹에서 흐린 본문+시트로 설치를 유도한다. 웹에 빈 404를 두지 않는다.

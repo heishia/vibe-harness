@@ -26,7 +26,7 @@ git submodule add https://github.com/heishia/vibe-harness.git vibe-harness && no
 
 ## 이 폴더 구조
 
-- `.cursor/rules` — 원칙. 기본은 앱 UI·Capacitor. 랜딩·관리자는 `optional-web-surfaces` (요청 시에만)
+- `.cursor/rules` — 원칙. 기본은 앱 UI 토큰·패턴·Capacitor. 랜딩·관리자는 `optional-web-surfaces` (요청 시에만)
 - `.cursor/skills` — 배포·에셋·스토어 절차
 - `templates` — 에셋 폴더, lib 뼈대, 명령 스니펫
 - `scripts/install.mjs` — 프로젝트 루트 `.cursor` 연결
